@@ -13,19 +13,19 @@ def get_me_random_list(n):
     random.shuffle(a_list)
     return a_list
     
-def sequential_search(a_list,item)::
+def sequential_search(a_list,item):
     pass
 
 
-def ordered_sequential_search(a_list,item)::
+def ordered_sequential_search(a_list,item):
     pass
 
 
-def binary_search_iterative(a_list,item)::
+def binary_search_iterative(a_list,item):
     pass
     
     
-def binary_search_recursive(a_list,item)::
+def binary_search_recursive(a_list,item):
     pass
 
 

@@ -12,7 +12,8 @@ def get_me_random_list(n):
     a_list = list(range(n))
     random.shuffle(a_list)
     return a_list
-    
+
+
 def sequential_search(a_list,item):
     pass
 

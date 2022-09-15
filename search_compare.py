@@ -1,6 +1,4 @@
-import argparse
-# other imports go here
-
+import time
 import random
 
 
@@ -78,4 +76,18 @@ def binary_search_recursive(a_list,item):
 
 if __name__ == "__main__":
     """Main entry point"""
-    pass
+    the_size = 500
+
+    total_time = 0
+    for i in range(100):
+        mylist = get_me_random_list(the_size)
+        # sorting is not needed for sequential search.
+        mylist = sorted(mylist)
+
+        start = time.time()
+        check = binary_search_iterative(mylist, 99999999)
+        time_spent = time.time() - start
+        total_time += time_spent
+
+    avg_time = total_time / 100
+    print(f"Binary Search Iterative took {avg_time:10.7f} seconds to run, on average for a list of {the_size} elements")

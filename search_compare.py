@@ -3,6 +3,7 @@ import argparse
 
 import random
 
+
 def get_me_random_list(n):
     """Generate list of n elements in random order
     
@@ -21,8 +22,8 @@ def sequential_search(a_list, item):
     while pos < len(a_list) and not found:
         if a_list[pos] == item:
             found = True
-    else:
-        pos = pos + 1
+        else:
+            pos = pos + 1
 
     return found
 

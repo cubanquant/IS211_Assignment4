@@ -1,93 +1,119 @@
+import argparse
 import time
 import random
 
+# creating search functions
 
-def get_me_random_list(n):
-    """Generate list of n elements in random order
-    
-    :params: n: Number of elements in the list
-    :returns: A list with n elements in random order
-    """
-    a_list = list(range(n))
-    random.shuffle(a_list)
-    return a_list
+def sequential_search(n, item):
+    start = time.perf_counter()
+    for i in n:
+        if i == item:
+            end = time.perf_counter()
+            return True, end - start
+    end = time.perf_counter()
+    return False, end - start
 
+def ordered_sequential_search(n, item):
+    n.sort()
+    start = time.perf_counter()
+    for i in n:
+        if i == item:
+            end = time.perf_counter()
+            return True, end - start
+        elif i > item:
+            break
+    end = time.perf_counter()
+    return False, end - start
 
-def sequential_search(a_list, item):
-    pos = 0
-    found = False
-
-    while pos < len(a_list) and not found:
-        if a_list[pos] == item:
-            found = True
-        else:
-            pos = pos + 1
-
-    return found
-
-
-def ordered_sequential_search(a_list, item):
-    pos = 0
-    found = False
-    stop = False
-    while pos < len(a_list) and not found and not stop:
-        if a_list[pos] == item:
-            found = True
-        else:
-            if a_list[pos] > item:
-                stop = True
-            else:
-                pos = pos + 1
-
-    return found
-
-
-def binary_search_iterative(a_list,item):
+def binary_search_iterative(n, item):
+    n.sort()
+    start = time.perf_counter()
     first = 0
-
-    last = len(a_list) - 1
+    last = len(n) - 1
     found = False
+
     while first <= last and not found:
         midpoint = (first + last) // 2
-        if a_list[midpoint] == item:
+        if n[midpoint] == item:
             found = True
         else:
-            if item < a_list[midpoint]:
+            if item < n[midpoint]:
                 last = midpoint - 1
             else:
                 first = midpoint + 1
+    end = time.perf_counter()
+    return found, end - start
 
-    return found
-    
-    
-def binary_search_recursive(a_list,item):
-    if len(a_list) == 0:
+
+def binary_search_recursive(n, item):
+    n.sort()
+    start = time.perf_counter()
+    result = binary_search_recursive_helper(n, item, 0, len(n) - 1)
+    end = time.perf_counter()
+    return result, end - start
+
+
+def binary_search_recursive_helper(n, item, start_idx, end_idx):
+    if start_idx == end_idx:
         return False
+    mid = (start_idx + end_idx) // 2
+    if n[mid] == item:
+        return True
+    elif item < n[mid]:
+        return binary_search_recursive_helper(n, item, start_idx, mid - 1)
     else:
-        midpoint = len(a_list) // 2
-        if a_list[midpoint] == item:
-            return True
-        else:
-            if item < a_list[midpoint]:
-                return binary_search_recursive(a_list[:midpoint], item)
-            else:
-                return binary_search_recursive(a_list[midpoint + 1:], item)
+        return binary_search_recursive_helper(n, item, mid + 1, end_idx)
 
+# have to create parse function
 
-if __name__ == "__main__":
-    """Main entry point"""
-    the_size = 500
+def parse_args():
+    parser = argparse.ArgumentParser(description="Benchmarking search comparison")
+    parser.add_argument(
+        "--sizes", nargs="+", type=int, default=[500, 1000, 5000],
+        help="The number of sizes to compare ex: (500, 1000, 5000)",
+    )
+    parser.add_argument(
+        "--runs", nargs="+", type=int, default=100,
+        help="The number of runs to compare (default: 100)",
+    )
+    return parser.parse_args()
 
-    total_time = 0
-    for i in range(100):
-        mylist = get_me_random_list(the_size)
-        # sorting is not needed for sequential search.
-        mylist = sorted(mylist)
+# creating main function
 
-        start = time.time()
-        check = binary_search_iterative(mylist, 99999999)
-        time_spent = time.time() - start
-        total_time += time_spent
+def main():
+    args = parse_args()
+    sizes = args.sizes
+    number_of_runs = args.runs
+    target = 99999999
 
-    avg_time = total_time / 100
-    print(f"Binary Search Iterative took {avg_time:10.7f} seconds to run, on average for a list of {the_size} elements")
+    for size in sizes:
+        times = {
+            'sequential': 0,
+            'ordered': 0,
+            'binary_iter': 0,
+            'binary_rec': 0,
+        }
+
+        for _ in range(number_of_runs):
+            n = [random.randint(1, 10000) for _ in range(size)]
+
+            _, t = sequential_search(n[:], target)
+            times['sequential'] += t
+
+            _, t = ordered_sequential_search(n[:], target)
+            times['ordered'] += t
+
+            _, t = binary_search_iterative(n[:], target)
+            times['binary_iter'] += t
+
+            _, t = binary_search_recursive(n[:], target)
+            times['binary_rec'] += t
+
+    print(f"\nList size: {size}")
+    print(f"Sequential Search took {times['sequential'] / number_of_runs:10.7f} seconds to run, on average")
+    print(f"Ordered Sequential Search took {times['ordered'] / number_of_runs:10.7f} seconds to run, on average")
+    print(f"Binary Search Iterative took {times['binary_iter'] / number_of_runs:10.7f} seconds to run, on average")
+    print(f"Binary Search Recursive took {times['binary_rec'] / number_of_runs:10.7f} seconds, on average")
+
+if __name__ == "_main_":
+    main()
